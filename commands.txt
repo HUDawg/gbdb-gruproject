@@ -235,8 +235,8 @@ JOIN Assignment ON Grade.assignment_id = Assignment.assignment_id
 JOIN Enrollment ON Grade.student_id = Enrollment.student_id
 WHERE Enrollment.course_id = 1;
 
-INSERT INTO Assignment (course_id, category_id, title, description) VALUES (1, 1, 'Additional Assignment', 'Description of the additional assignment.');
-VALUES (1, 1, 'CS');
+INSERT INTO Assignment (course_id, category_id, title, description) VALUES 
+(1, 1, 'Additional Assignment', 'Description of the additional assignment.');
 
 UPDATE GradeCategory
 SET weight = 10
