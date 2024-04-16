@@ -1,0 +1,214 @@
+CREATE TABLE Student (
+    student_id INT,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    phone_number VARCHAR(20),
+    PRIMARY KEY (student_id)
+);
+
+INSERT INTO Student (student_id, first_name, last_name, email, phone_number)
+VALUES
+    (1, 'John', 'Doe', 'john.doe@example.com', '123-456-7890'),
+    (2, 'Jane', 'Smith', 'jane.smith@example.com', '987-654-3210'),
+    (3, 'Michael', 'Johnson', 'michael.johnson@example.com', '555-123-4567'),
+    (4, 'Emily', 'Brown', 'emily.brown@example.com', '999-888-7777'),
+    (5, 'David', 'Taylor', 'david.taylor@example.com', '444-555-6666'),
+    (6, 'Jessica', 'Clark', 'jessica.clark@example.com', '777-999-8888'),
+    (7, 'Christopher', 'Anderson', 'christopher.anderson@example.com', '222-333-4444'),
+    (8, 'Sarah', 'Martinez', 'sarah.martinez@example.com', '666-777-8888'),
+    (9, 'Ryan', 'Harris', 'ryan.harris@example.com', '111-222-3333'),
+    (10, 'Amanda', 'Young', 'amanda.young@example.com', '888-999-0000');
+
+CREATE TABLE Professor (
+    professor_id INT,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    phone_number VARCHAR(20),
+    PRIMARY KEY (professor_id)
+);
+
+INSERT INTO Professor (professor_id, first_name, last_name, email, phone_number)
+VALUES
+    (1, 'Michael', 'Johnson', 'michael.johnson@example.com', '555-123-4567'),
+    (2, 'Emily', 'Brown', 'emily.brown@example.com', '999-888-7777'),
+    (3, 'David', 'Taylor', 'david.taylor@example.com', '444-555-6666'),
+    (4, 'Jessica', 'Clark', 'jessica.clark@example.com', '777-999-8888');
+
+CREATE TABLE Course (
+    course_id INT PRIMARY KEY,
+    department VARCHAR(50),
+    course_number VARCHAR(10),
+    semester VARCHAR(20),
+    year INT,
+    course_name VARCHAR(100)
+);
+
+INSERT INTO Course (course_id, department, course_number, semester, year, course_name)
+VALUES
+    (1, 'Mathematics', 'MATH101', 'Fall', 2024, 'Statistics'),
+    (2, 'Mathematics', 'MATH102', 'Fall', 2024, 'Calculus'),
+    (3, 'Mathematics', 'MATH103', 'Spring', 2025, 'Algebra'),
+    (4, 'Biology', 'BIO101', 'Fall', 2024, 'Biology'),
+    (5, 'Chemistry', 'CHEM101', 'Spring', 2025, 'Chemistry'),
+    (6, 'Physics', 'PHYS101', 'Fall', 2024, 'Physics'),
+    (7, 'Psychology', 'PSYC101', 'Spring', 2025, 'Psychology'),
+    (8, 'Mathematics', 'MATH104', 'Fall', 2024, 'Discrete Mathematics');
+
+CREATE TABLE Enrollment (
+    enrollment_id INT PRIMARY KEY,
+    student_id INT,
+    professor_id INT,
+    course_id INT,
+    FOREIGN KEY (professor_id) REFERENCES Professor(professor_id),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id)
+);
+
+INSERT INTO Enrollment (enrollment_id, student_id, professor_id, course_id)
+VALUES
+    (1, 1, 1, 1),
+    (2, 2, 2, 2),
+    (3, 3, 3, 3),
+    (4, 4, 4, 4),
+    (5, 5, 1, 5),
+    (6, 6, 2, 6),
+    (7, 7, 3, 7),
+    (8, 8, 4, 8),
+    (9, 9, 1, 1),
+    (10, 10, 2, 2);
+
+CREATE TABLE GradeCategory (
+    category_id INT PRIMARY KEY,
+    course_id INT,
+    name VARCHAR(50),
+    weight DECIMAL(5,2),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id)
+);
+
+INSERT INTO GradeCategory (category_id, course_id, name, weight)
+VALUES
+    (1, 1, 'Participation', 10.00),
+    (2, 1, 'Homework', 20.00),
+    (3, 1, 'Tests', 50.00),
+    (4, 1, 'Projects', 20.00),
+    (5, 2, 'Participation', 10.00),
+    (6, 2, 'Homework', 25.00),
+    (7, 2, 'Tests', 45.00),
+    (8, 2, 'Projects', 20.00),
+    (9, 3, 'Participation', 10.00),
+    (10, 3, 'Homework', 30.00),
+    (11, 3, 'Tests', 40.00),
+    (12, 3, 'Projects', 20.00),
+    (13, 4, 'Participation', 10.00),
+    (14, 4, 'Homework', 25.00),
+    (15, 4, 'Tests', 50.00),
+    (16, 4, 'Projects', 15.00),
+    (17, 5, 'Participation', 10.00),
+    (18, 5, 'Homework', 30.00),
+    (19, 5, 'Tests', 40.00),
+    (20, 5, 'Projects', 20.00),
+    (21, 6, 'Participation', 10.00),
+    (22, 6, 'Homework', 20.00),
+    (23, 6, 'Tests', 50.00),
+    (24, 6, 'Projects', 20.00),
+    (25, 7, 'Participation', 10.00),
+    (26, 7, 'Homework', 25.00),
+    (27, 7, 'Tests', 45.00),
+    (28, 7, 'Projects', 20.00),
+    (29, 8, 'Participation', 10.00),
+    (30, 8, 'Homework', 30.00),
+    (31, 8, 'Tests', 40.00),
+    (32, 8, 'Projects', 20.00);
+
+CREATE TABLE Assignment (
+    assignment_id INT PRIMARY KEY,
+    course_id INT,
+    category_id INT,
+    title VARCHAR(100),
+    description TEXT,
+    FOREIGN KEY (course_id) REFERENCES Course(course_id),
+    FOREIGN KEY (category_id) REFERENCES GradeCategory(category_id)
+);
+
+INSERT INTO Assignment (assignment_id, course_id, category_id, title, description)
+VALUES
+    (1, 1, 1, 'Participation Assignment', 'This statistics assignment requires active participation in class discussions.'),
+    (2, 1, 2, 'Homework Assignment', 'Complete the statistics homework problems from chapter 1.'),
+    (3, 1, 3, 'Midterm Exam', 'Take the statistics midterm exam covering chapters 1-3.'),
+    (4, 1, 4, 'Project Proposal', 'Submit a statistics project proposal for the semester.'),
+    (5, 2, 5, 'Participation Assignment', 'Active participation in calculus class discussions.'),
+    (6, 2, 6, 'Homework Assignment', 'Complete the calculus homework provided in class.'),
+    (7, 2, 7, 'Midterm Exam', 'Take the calculus midterm exam covering calculus topics.'),
+    (8, 2, 8, 'Project Proposal', 'Submit a calculus project proposal for the semester.'),
+    (9, 3, 9, 'Participation Assignment', 'This algebra assignment requires active participation in class discussions.'),
+    (10, 3, 10, 'Homework Assignment', 'Complete the algebra homework problems from the textbook.'),
+    (11, 3, 11, 'Midterm Exam', 'Take the algebra midterm exam covering algebra topics.'),
+    (12, 3, 12, 'Project Proposal', 'Submit an algebra project proposal for the semester.'),
+    (13, 4, 13, 'Participation Assignment', 'Active participation in biology class discussions.'),
+    (14, 4, 14, 'Lab Report', 'Write a biology lab report based on the conducted experiments.'),
+    (15, 4, 15, 'Midterm Exam', 'Take the biology midterm exam covering biology topics.'),
+    (16, 4, 16, 'Research Proposal', 'Submit a biology research proposal for the semester.'),
+    (17, 5, 17, 'Participation Assignment', 'Active participation in chemistry class discussions.'),
+    (18, 5, 18, 'Lab Report', 'Write a chemistry lab report based on the conducted experiments.'),
+    (19, 5, 19, 'Midterm Exam', 'Take the chemistry midterm exam covering chemistry topics.'),
+    (20, 5, 20, 'Research Proposal', 'Submit a chemistry research proposal for the semester.'),
+    (21, 6, 21, 'Participation Assignment', 'Active participation in physics class discussions.'),
+    (22, 6, 22, 'Homework Assignment', 'Complete the physics homework problems from the textbook.'),
+    (23, 6, 23, 'Midterm Exam', 'Take the physics midterm exam covering physics topics.'),
+    (24, 6, 24, 'Project Proposal', 'Submit a physics project proposal for the semester.'),
+    (25, 7, 25, 'Participation Assignment', 'This psychology assignment requires active participation in class discussions.'),
+    (26, 7, 26, 'Research Paper', 'Write a research paper on a psychology topic.'),
+    (27, 7, 27, 'Midterm Exam', 'Take the psychology midterm exam covering psychology topics.'),
+    (28, 7, 28, 'Research Proposal', 'Submit a psychology research proposal for the semester.'),
+    (29, 8, 29, 'Participation Assignment', 'Active participation in discrete mathematics class discussions.'),
+    (30, 8, 30, 'Problem Set', 'Solve the discrete mathematics problems provided in the problem set.'),
+    (31, 8, 31, 'Midterm Exam', 'Take the discrete mathematics midterm exam covering discrete mathematics topics.'),
+    (32, 8, 32, 'Project Proposal', 'Submit a discrete mathematics project proposal for the semester.');
+
+CREATE TABLE Grade (
+    grade_id INT PRIMARY KEY,
+    student_id INT,
+    assignment_id INT,
+    score DECIMAL(5,2),
+    comments TEXT,
+    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (assignment_id) REFERENCES Assignment(assignment_id)
+);
+
+INSERT INTO Grade (grade_id, student_id, assignment_id, score, comments)
+VALUES
+    (1, 1, 1, 95.50, 'Well done! Your participation in Statistics class discussions was excellent.'),
+    (2, 1, 2, 88.75, 'Good effort on completing the Statistics homework assignment.'),
+    (3, 1, 3, 85.00, 'You performed well on the Statistics midterm exam.'),
+    (4, 1, 4, NULL, 'Please submit your Statistics project proposal by the deadline.'),
+    (5, 2, 5, 92.00, 'Great participation in Calculus class discussions!'),
+    (6, 2, 6, 80.25, 'Good work on the Calculus homework assignment.'),
+    (7, 2, 7, 87.50, 'Well done on the Calculus midterm exam.'),
+    (8, 2, 8, NULL, 'Remember to submit your Calculus project proposal.'),
+    (9, 3, 9, 90.75, 'Excellent participation in Algebra class discussions!'),
+    (10, 3, 10, 85.50, 'Good effort on completing the Algebra homework.'),
+    (11, 3, 11, 92.00, 'You did well on the Algebra midterm exam.'),
+    (12, 3, 12, NULL, 'Submit your Algebra project proposal as soon as possible.'),
+    (13, 4, 13, 88.00, 'Great participation in Biology class discussions!'),
+    (14, 4, 14, 82.25, 'Well-written Biology lab report.'),
+    (15, 4, 15, 90.50, 'Excellent performance on the Biology midterm exam.'),
+    (16, 4, 16, NULL, 'Don\'t forget to submit your Biology research proposal.'),
+    (17, 5, 17, 85.75, 'Active participation in Chemistry class discussions!'),
+    (18, 5, 18, 79.50, 'Detailed Chemistry lab report.'),
+    (19, 5, 19, 88.25, 'You did well on the Chemistry midterm exam.'),
+    (20, 5, 20, NULL, 'Make sure to submit your Chemistry research proposal.'),
+    (21, 6, 21, 91.25, 'Great participation in Physics class discussions!'),
+    (22, 6, 22, 84.75, 'Good work on the Physics homework assignment.'),
+    (23, 6, 23, 89.00, 'Well done on the Physics midterm exam.'),
+    (24, 6, 24, NULL, 'Submit your Physics project proposal by the deadline.'),
+    (25, 7, 25, 86.50, 'Active participation in Psychology class discussions!'),
+    (26, 7, 26, 81.25, 'Well-researched Psychology paper.'),
+    (27, 7, 27, 88.75, 'You performed well on the Psychology midterm exam.'),
+    (28, 7, 28, NULL, 'Make sure to submit your Psychology research proposal.'),
+    (29, 8, 29, 89.75, 'Excellent participation in Discrete Mathematics class discussions!'),
+    (30, 8, 30, 83.00, 'Good work on the Discrete Mathematics problem set.'),
+    (31, 8, 31, 90.25, 'Well done on the Discrete Mathematics midterm exam.'),
+    (32, 8, 32, NULL, 'Submit your Discrete Mathematics project proposal by the deadline.');
+
