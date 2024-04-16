@@ -194,7 +194,7 @@ VALUES
     (13, 4, 13, 88.00, 'Great participation in Biology class discussions!'),
     (14, 4, 14, 82.25, 'Well-written Biology lab report.'),
     (15, 4, 15, 90.50, 'Excellent performance on the Biology midterm exam.'),
-    (16, 4, 16, NULL, 'Don\'t forget to submit your Biology research proposal.'),
+    (16, 4, 16, NULL, 'Dont forget to submit your Biology research proposal.'),
     (17, 5, 17, 85.75, 'Active participation in Chemistry class discussions!'),
     (18, 5, 18, 79.50, 'Detailed Chemistry lab report.'),
     (19, 5, 19, 88.25, 'You did well on the Chemistry midterm exam.'),
