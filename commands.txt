@@ -132,7 +132,7 @@ CREATE TABLE Assignment (
     FOREIGN KEY (category_id) REFERENCES GradeCategory(category_id)
 );
 
-INSERT INTO Assignment (assignment_id, course_id, category_id, title, description)
+INSERT INTO Assignment (assignment_id, course_id, category_id, title, description) 
 VALUES
     (1, 1, 1, 'Participation Assignment', 'This statistics assignment requires active participation in class discussions.'),
     (2, 1, 2, 'Homework Assignment', 'Complete the statistics homework problems from chapter 1.'),
@@ -224,22 +224,21 @@ SELECT MIN(score) AS lowest_grade
 FROM Grade
 WHERE assignment_id = 1;
 
-SELECT DISTINCT student_id
-FROM Grade 
-JOIN Assignments a ON g.assignment_id = a.assignment_id
-JOIN Students s ON g.student_id = s.student_id
-WHERE a.course_id = 1;
+SELECT DISTINCT Student.student_id, Student.first_name, Student.last_name
+FROM Student
+JOIN Enrollment ON Student.student_id = Enrollment.student_id
+WHERE Enrollment.course_id = 1;
 
-SELECT s.student_id, a.assignment_name, g.grade
-FROM Grade g
-JOIN Assignments a ON g.assignment_id = a.assignment_id
-JOIN Students s ON g.student_id = s.student_id
-WHERE a.course_id = 1;
+SELECT Student.student_id, Assignment.title, Grade.score
+FROM Grade
+JOIN Assignment ON Grade.assignment_id = Assignment.assignment_id
+JOIN Enrollment ON Grade.student_id = Enrollment.student_id
+WHERE Enrollment.course_id = 1;
 
-INSERT INTO Assignments (course_id, category_id, de3scription)
+INSERT INTO Assignment (course_id, category_id, title, description) VALUES (1, 1, 'Additional Assignment', 'Description of the additional assignment.');
 VALUES (1, 1, 'CS');
 
-UPDATE Grade Category
+UPDATE GradeCategory
 SET weight = 10
 WHERE course_id = 1 AND category_id = 1;
 
@@ -249,28 +248,29 @@ WHERE assignment_id = 1;
 
 UPDATE Grade
 SET score = score + 2
-WHERE assignment_id = 1
-AND student_id IN (
+WHERE assignment_id = 1 AND student_id IN (
     SELECT student_id
     FROM Student
     WHERE last_name LIKE '%Q%'
 );
 
-SELECT SUM(score * weight / 100) AS final_grade
-FROM Grade g
-JOIN Assignments a ON g.assignment_id = a.assignment_id
-JOIN GradeCategory gc ON a.category_id = gc.category_id
-WHERE student_id = 1;
+SELECT student_id, SUM(score * weight / 100) AS final_grade
+FROM Grade
+JOIN Assignment ON Grade.assignment_id = Assignment.assignment_id
+JOIN GradeCategory ON Assignment.category_id = GradeCategory.category_id
+WHERE student_id = 1
+GROUP BY student_id;
 
-SELECT SUM(score * weight / 100) AS final_grade
+SELECT student_id, SUM(score * weight / 100) AS final_grade
 FROM (
     SELECT g.student_id, g.score, gc.weight,
-        ROW_NUMBER() OVER (PARTITION BY gc.category_id ORDER BY g.score ASC) AS row_num
+        ROW_NUMBER() OVER (PARTITION BY g.assignment_id ORDER BY g.score ASC) AS row_num
     FROM Grade g
-    JOIN Assignments a ON g.assignment_id = a.assignment_id
+    JOIN Assignment a ON g.assignment_id = a.assignment_id
     JOIN GradeCategory gc ON a.category_id = gc.category_id
-    WHERE student_id = 1
-) AS sub
-WHERE row_num > 1;
+    WHERE g.student_id = 1
+) sub
+WHERE row_num > 1
+GROUP BY student_id;
 
 
