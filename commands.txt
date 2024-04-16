@@ -212,15 +212,15 @@ VALUES
     (31, 8, 31, 90.25, 'Well done on the Discrete Mathematics midterm exam.'),
     (32, 8, 32, NULL, 'Submit your Discrete Mathematics project proposal by the deadline.');
 
-SELECT AVG(grade) AS average_grade
+SELECT AVG(score) AS average_grade
 FROM Grade
 WHERE assignment_id = 1;
 
-SELECT MAX(grade) AS highest_grade
+SELECT MAX(score) AS highest_grade
 FROM Grade
 WHERE assignment_id = 1;
 
-SELECT MIN(grade) AS lowest_grade
+SELECT MIN(score) AS lowest_grade
 FROM Grade
 WHERE assignment_id = 1;
 
