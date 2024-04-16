@@ -212,3 +212,65 @@ VALUES
     (31, 8, 31, 90.25, 'Well done on the Discrete Mathematics midterm exam.'),
     (32, 8, 32, NULL, 'Submit your Discrete Mathematics project proposal by the deadline.');
 
+SELECT AVG(grade) AS average_grade
+FROM Grade
+WHERE assignment_id = 1;
+
+SELECT MAX(grade) AS highest_grade
+FROM Grade
+WHERE assignment_id = 1;
+
+SELECT MIN(grade) AS lowest_grade
+FROM Grade
+WHERE assignment_id = 1;
+
+SELECT DISTINCT student_id
+FROM Grade 
+JOIN Assignments a ON g.assignment_id = a.assignment_id
+JOIN Students s ON g.student_id = s.student_id
+WHERE a.course_id = 1;
+
+SELECT s.student_id, a.assignment_name, g.grade
+FROM Grade g
+JOIN Assignments a ON g.assignment_id = a.assignment_id
+JOIN Students s ON g.student_id = s.student_id
+WHERE a.course_id = 1;
+
+INSERT INTO Assignments (course_id, category_id, de3scription)
+VALUES (1, 1, 'CS');
+
+UPDATE Grade Category
+SET weight = 10
+WHERE course_id = 1 AND category_id = 1;
+
+UPDATE Grade
+SET score = score +2
+WHERE assignment_id = 1;
+
+UPDATE Grade
+SET score = score + 2
+WHERE assignment_id = 1
+AND student_id IN (
+    SELECT student_id
+    FROM Student
+    WHERE last_name LIKE '%Q%'
+);
+
+SELECT SUM(score * weight / 100) AS final_grade
+FROM Grade g
+JOIN Assignments a ON g.assignment_id = a.assignment_id
+JOIN GradeCategory gc ON a.category_id = gc.category_id
+WHERE student_id = 1;
+
+SELECT SUM(score * weight / 100) AS final_grade
+FROM (
+    SELECT g.student_id, g.score, gc.weight,
+        ROW_NUMBER() OVER (PARTITION BY gc.category_id ORDER BY g.score ASC) AS row_num
+    FROM Grade g
+    JOIN Assignments a ON g.assignment_id = a.assignment_id
+    JOIN GradeCategory gc ON a.category_id = gc.category_id
+    WHERE student_id = 1
+) AS sub
+WHERE row_num > 1;
+
+
