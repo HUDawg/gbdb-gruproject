@@ -585,3 +585,103 @@ SELECT COUNT(*) AS total_enrollments FROM Enrollment;
 SELECT COUNT(*) AS total_grade_categories FROM GradeCategory;
 SELECT COUNT(*) AS total_assignments FROM Assignment;
 SELECT COUNT(*) AS total_grades FROM Grade;
+
+/* Final Grade Query for all Students*/
+
+SELECT
+    g.student_id,
+    s.first_name,
+    s.last_name,
+    c.course_id,
+    c.course_number,
+    c.course_name,
+    ROUND(SUM(g.score * gc.weight / 100), 2) AS final_grade
+FROM Grade g
+JOIN Student s
+    ON g.student_id = s.student_id
+JOIN Assignment a
+    ON g.assignment_id = a.assignment_id
+JOIN GradeCategory gc
+    ON a.category_id = gc.category_id
+JOIN Course c
+    ON a.course_id = c.course_id
+GROUP BY
+    g.student_id,
+    s.first_name,
+    s.last_name,
+    c.course_id,
+    c.course_number,
+    c.course_name
+ORDER BY
+    c.course_id,
+    g.student_id;
+
+
+
+/* Final Grade Query for one Student*/
+
+SELECT
+    g.student_id,
+    s.first_name,
+    s.last_name,
+    c.course_id,
+    c.course_number,
+    c.course_name,
+    ROUND(SUM(g.score * gc.weight / 100), 2) AS final_grade
+FROM Grade g
+JOIN Student s
+    ON g.student_id = s.student_id
+JOIN Assignment a
+    ON g.assignment_id = a.assignment_id
+JOIN GradeCategory gc
+    ON a.category_id = gc.category_id
+JOIN Course c
+    ON a.course_id = c.course_id
+WHERE g.student_id = 1
+GROUP BY
+    g.student_id,
+    s.first_name,
+    s.last_name,
+    c.course_id,
+    c.course_number,
+    c.course_name;
+
+/* Final Letter Grade Query for one Student*/
+
+SELECT
+    g.student_id,
+    s.first_name,
+    s.last_name,
+    c.course_id,
+    c.course_number,
+    c.course_name,
+    ROUND(SUM(g.score * gc.weight / 100), 2) AS final_grade,
+    CASE
+        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 90 THEN 'A'
+        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 80 THEN 'B'
+        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 70 THEN 'C'
+        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 60 THEN 'D'
+        ELSE 'F'
+    END AS letter_grade
+FROM Grade g
+JOIN Student s
+    ON g.student_id = s.student_id
+JOIN Assignment a
+    ON g.assignment_id = a.assignment_id
+JOIN GradeCategory gc
+    ON a.category_id = gc.category_id
+JOIN Course c
+    ON a.course_id = c.course_id
+GROUP BY
+    g.student_id,
+    s.first_name,
+    s.last_name,
+    c.course_id,
+    c.course_number,
+    c.course_name
+ORDER BY
+    c.course_id,
+    g.student_id;
+
+
+
