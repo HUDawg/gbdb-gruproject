@@ -1,19 +1,21 @@
--- GradeBook database setup script
--- Clean create + seed script for MySQL 8
+-- GradeBook Database Setup Script
 
---CREATE DATABASE IF NOT EXISTS GradeBookDB;
+CREATE DATABASE IF NOT EXISTS GradeBookDB;
 USE GradeBookDB;
 
--- Safe reset for reruns
--- SET FOREIGN_KEY_CHECKS = 0;
--- DROP TABLE IF EXISTS Grade;
--- DROP TABLE IF EXISTS Assignment;
--- DROP TABLE IF EXISTS GradeCategory;
--- DROP TABLE IF EXISTS Enrollment;
--- DROP TABLE IF EXISTS Course;
--- DROP TABLE IF EXISTS Professor;
--- DROP TABLE IF EXISTS Student;
--- SET FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS Grade;
+DROP TABLE IF EXISTS Assignment;
+DROP TABLE IF EXISTS GradeCategory;
+DROP TABLE IF EXISTS Enrollment;
+DROP TABLE IF EXISTS Course;
+DROP TABLE IF EXISTS Professor;
+DROP TABLE IF EXISTS Student;
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- =========================================================
+-- TABLES
+-- =========================================================
 
 CREATE TABLE Student (
     student_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,19 +41,16 @@ CREATE TABLE Course (
     semester VARCHAR(20) NOT NULL,
     year INT NOT NULL,
     course_name VARCHAR(100) NOT NULL,
-    CONSTRAINT fk_course_professor 
-        FOREIGN KEY (professor_id) REFERENCES Professor(professor_id)
+    FOREIGN KEY (professor_id) REFERENCES Professor(professor_id)
 );
 
 CREATE TABLE Enrollment (
     enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
     course_id INT NOT NULL,
-    CONSTRAINT fk_enrollment_student 
-        FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    CONSTRAINT fk_enrollment_course 
-        FOREIGN KEY (course_id) REFERENCES Course(course_id),
-    CONSTRAINT uq_student_course UNIQUE (student_id, course_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id),
+    UNIQUE (student_id, course_id)
 );
 
 CREATE TABLE GradeCategory (
@@ -59,9 +58,8 @@ CREATE TABLE GradeCategory (
     course_id INT NOT NULL,
     name VARCHAR(50) NOT NULL,
     weight DECIMAL(5,2) NOT NULL,
-    CONSTRAINT fk_category_course 
-        FOREIGN KEY (course_id) REFERENCES Course(course_id),
-    CONSTRAINT uq_course_category UNIQUE (course_id, name)
+    FOREIGN KEY (course_id) REFERENCES Course(course_id),
+    UNIQUE (course_id, name)
 );
 
 CREATE TABLE Assignment (
@@ -70,11 +68,9 @@ CREATE TABLE Assignment (
     category_id INT NOT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT,
-    CONSTRAINT fk_assignment_course 
-        FOREIGN KEY (course_id) REFERENCES Course(course_id),
-    CONSTRAINT fk_assignment_category 
-        FOREIGN KEY (category_id) REFERENCES GradeCategory(category_id),
-    CONSTRAINT uq_course_assignment UNIQUE (course_id, title)
+    FOREIGN KEY (course_id) REFERENCES Course(course_id),
+    FOREIGN KEY (category_id) REFERENCES GradeCategory(category_id),
+    UNIQUE (course_id, title)
 );
 
 CREATE TABLE Grade (
@@ -83,59 +79,66 @@ CREATE TABLE Grade (
     assignment_id INT NOT NULL,
     score DECIMAL(5,2) NOT NULL,
     comments TEXT,
-    CONSTRAINT fk_grade_student 
-        FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    CONSTRAINT fk_grade_assignment 
-        FOREIGN KEY (assignment_id) REFERENCES Assignment(assignment_id),
-    CONSTRAINT uq_student_assignment UNIQUE (student_id, assignment_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (assignment_id) REFERENCES Assignment(assignment_id),
+    UNIQUE (student_id, assignment_id)
 );
 
-INSERT INTO Course (department, course_number, semester, year, course_name)
-VALUES
-    ('Mathematics', 'MATH201', 'Fall', 2025, 'Calculus I'),
-    ('Mathematics', 'MATH202', 'Spring', 2025, 'Linear Algebra'),
-    ('Mathematics', 'MATH301', 'Fall', 2026, 'Probability Theory'),
-    ('Mathematics', 'MATH320', 'Spring', 2026, 'Discrete Structures'),
-    ('Biology', 'BIO110', 'Fall', 2025, 'General Biology I'),
-    ('Biology', 'BIO220', 'Spring', 2025, 'Genetics'),
-    ('Biology', 'BIO310', 'Fall', 2026, 'Microbiology'),
-    ('Biology', 'BIO330', 'Spring', 2026, 'Ecology'),
-    ('Chemistry', 'CHEM101', 'Fall', 2025, 'General Chemistry I'),
-    ('Chemistry', 'CHEM210', 'Spring', 2025, 'Organic Chemistry I'),
-    ('Chemistry', 'CHEM320', 'Fall', 2026, 'Analytical Chemistry'),
-    ('Chemistry', 'CHEM340', 'Spring', 2026, 'Biochemistry'),
-    ('Physics', 'PHYS111', 'Fall', 2025, 'College Physics I'),
-    ('Physics', 'PHYS221', 'Spring', 2025, 'University Physics I'),
-    ('Physics', 'PHYS310', 'Fall', 2026, 'Modern Physics'),
-    ('Physics', 'PHYS330', 'Spring', 2026, 'Thermodynamics'),
-    ('Computer Science', 'CS101', 'Fall', 2025, 'Introduction to Programming'),
-    ('Computer Science', 'CS210', 'Spring', 2025, 'Data Structures'),
-    ('Computer Science', 'CS320', 'Fall', 2026, 'Database Systems'),
-    ('Computer Science', 'CS350', 'Spring', 2026, 'Computer Networks');
+-- =========================================================
+-- PROFESSORS
+-- =========================================================
 
-INSERT INTO Professor (first_name, last_name, email, phone_number)
-VALUES
-    ('Alma', 'Bennett', 'alma.bennett@college.edu', '301-555-2001'),
-    ('Bruce', 'Carson', 'bruce.carson@college.edu', '301-555-2002'),
-    ('Cynthia', 'Donovan', 'cynthia.donovan@college.edu', '301-555-2003'),
-    ('Derek', 'Everett', 'derek.everett@college.edu', '301-555-2004'),
-    ('Elaine', 'Farley', 'elaine.farley@college.edu', '301-555-2005'),
-    ('Frederick', 'Goodwin', 'frederick.goodwin@college.edu', '301-555-2006'),
-    ('Gloria', 'Hollis', 'gloria.hollis@college.edu', '301-555-2007'),
-    ('Harold', 'Iverson', 'harold.iverson@college.edu', '301-555-2008'),
-    ('Irene', 'Jamison', 'irene.jamison@college.edu', '301-555-2009'),
-    ('Julian', 'Keating', 'julian.keating@college.edu', '301-555-2010'),
-    ('Kendra', 'Lennox', 'kendra.lennox@college.edu', '301-555-2011'),
-    ('Leon', 'Montgomery', 'leon.montgomery@college.edu', '301-555-2012'),
-    ('Monica', 'North', 'monica.north@college.edu', '301-555-2013'),
-    ('Neil', 'Prescott', 'neil.prescott@college.edu', '301-555-2014'),
-    ('Opal', 'Rutherford', 'opal.rutherford@college.edu', '301-555-2015'),
-    ('Preston', 'Sinclair', 'preston.sinclair@college.edu', '301-555-2016'),
-    ('Renee', 'Templeton', 'renee.templeton@college.edu', '301-555-2017'),
-    ('Sidney', 'Vaughn', 'sidney.vaughn@college.edu', '301-555-2018'),
-    ('Theresa', 'Whitaker', 'theresa.whitaker@college.edu', '301-555-2019'),
-    ('Victor', 'Callahan', 'victor.callahan@college.edu', '301-555-2020');
+INSERT INTO Professor (first_name, last_name, email, phone_number) VALUES
+('Alma','Bennett','alma.bennett@college.edu','301-555-2001'),
+('Bruce','Carson','bruce.carson@college.edu','301-555-2002'),
+('Cynthia','Donovan','cynthia.donovan@college.edu','301-555-2003'),
+('Derek','Everett','derek.everett@college.edu','301-555-2004'),
+('Elaine','Farley','elaine.farley@college.edu','301-555-2005'),
+('Frederick','Goodwin','frederick.goodwin@college.edu','301-555-2006'),
+('Gloria','Hollis','gloria.hollis@college.edu','301-555-2007'),
+('Harold','Iverson','harold.iverson@college.edu','301-555-2008'),
+('Irene','Jamison','irene.jamison@college.edu','301-555-2009'),
+('Julian','Keating','julian.keating@college.edu','301-555-2010'),
+('Kendra','Lennox','kendra.lennox@college.edu','301-555-2011'),
+('Leon','Montgomery','leon.montgomery@college.edu','301-555-2012'),
+('Monica','North','monica.north@college.edu','301-555-2013'),
+('Neil','Prescott','neil.prescott@college.edu','301-555-2014'),
+('Opal','Rutherford','opal.rutherford@college.edu','301-555-2015'),
+('Preston','Sinclair','preston.sinclair@college.edu','301-555-2016'),
+('Renee','Templeton','renee.templeton@college.edu','301-555-2017'),
+('Sidney','Vaughn','sidney.vaughn@college.edu','301-555-2018'),
+('Theresa','Whitaker','theresa.whitaker@college.edu','301-555-2019'),
+('Victor','Callahan','victor.callahan@college.edu','301-555-2020');
 
+-- =========================================================
+-- COURSES (FIXED: includes professor_id)
+-- =========================================================
+
+INSERT INTO Course (professor_id, department, course_number, semester, year, course_name) VALUES
+(1,'Mathematics','MATH201','Fall',2025,'Calculus I'),
+(2,'Mathematics','MATH202','Spring',2025,'Linear Algebra'),
+(3,'Mathematics','MATH301','Fall',2026,'Probability Theory'),
+(4,'Mathematics','MATH320','Spring',2026,'Discrete Structures'),
+(5,'Biology','BIO110','Fall',2025,'General Biology I'),
+(6,'Biology','BIO220','Spring',2025,'Genetics'),
+(7,'Biology','BIO310','Fall',2026,'Microbiology'),
+(8,'Biology','BIO330','Spring',2026,'Ecology'),
+(9,'Chemistry','CHEM101','Fall',2025,'General Chemistry I'),
+(10,'Chemistry','CHEM210','Spring',2025,'Organic Chemistry I'),
+(11,'Chemistry','CHEM320','Fall',2026,'Analytical Chemistry'),
+(12,'Chemistry','CHEM340','Spring',2026,'Biochemistry'),
+(13,'Physics','PHYS111','Fall',2025,'College Physics I'),
+(14,'Physics','PHYS221','Spring',2025,'University Physics I'),
+(15,'Physics','PHYS310','Fall',2026,'Modern Physics'),
+(16,'Physics','PHYS330','Spring',2026,'Thermodynamics'),
+(17,'Computer Science','CS101','Fall',2025,'Introduction to Programming'),
+(18,'Computer Science','CS210','Spring',2025,'Data Structures'),
+(19,'Computer Science','CS320','Fall',2026,'Database Systems'),
+(20,'Computer Science','CS350','Spring',2026,'Computer Networks');
+
+-- =========================================================
+-- STUDENTS (YOUR ORIGINAL SET — CLEANED)
+-- =========================================================
 
 INSERT INTO Student (first_name, last_name, email, phone_number)
 VALUES
@@ -239,7 +242,6 @@ VALUES
     ('Mackenzie', 'Walters', 'mackenzie.walters98@studentmail.edu', '202-555-1098'),
     ('Madeline', 'Xiong', 'madeline.xiong99@studentmail.edu', '202-555-1099'),
     ('Marcus', 'Yates', 'marcus.yates100@studentmail.edu', '202-555-1100'),
---Note in code
     ('Aaron', 'Baker', 'aaron.baker101@studentmail.edu', '202-555-1101'),
     ('Aaliyah', 'Brooks', 'aaliyah.brooks102@studentmail.edu', '202-555-1102'),
     ('Adrian', 'Collins', 'adrian.collins103@studentmail.edu', '202-555-1103'),
@@ -341,29 +343,20 @@ VALUES
     ('Madeline', 'Yates', 'madeline.yates199@studentmail.edu', '202-555-1199'),
     ('Marcus', 'Allen', 'marcus.allen200@studentmail.edu', '202-555-1200');
 
--- 10 students per course, 20 courses, 200 enrollments total
-INSERT INTO Enrollment (student_id, professor_id, course_id)
+
+
+
+INSERT INTO Enrollment (student_id, course_id)
 WITH RECURSIVE seq AS (
     SELECT 1 AS n
     UNION ALL
     SELECT n + 1 FROM seq WHERE n < 200
 )
 SELECT
-    n AS student_id,
-    CEILING(n / 10) AS professor_id,
-    CEILING(n / 10) AS course_id
+    n,
+    CEILING(n / 10)
 FROM seq;
 
-INSERT INTO GradeCategory (course_id, name, weight)
-SELECT c.course_id, cat.name, cat.weight
-FROM Course c
-CROSS JOIN (
-    SELECT 'Participation' AS name, 10.00 AS weight
-    UNION ALL SELECT 'Homework', 25.00
-    UNION ALL SELECT 'Midterm Exam', 30.00
-    UNION ALL SELECT 'Final Project', 35.00
-) AS cat
-ORDER BY c.course_id;
 
 INSERT INTO Assignment (course_id, category_id, title, description)
 SELECT
@@ -585,103 +578,3 @@ SELECT COUNT(*) AS total_enrollments FROM Enrollment;
 SELECT COUNT(*) AS total_grade_categories FROM GradeCategory;
 SELECT COUNT(*) AS total_assignments FROM Assignment;
 SELECT COUNT(*) AS total_grades FROM Grade;
-
-/* Final Grade Query for all Students*/
-
-SELECT
-    g.student_id,
-    s.first_name,
-    s.last_name,
-    c.course_id,
-    c.course_number,
-    c.course_name,
-    ROUND(SUM(g.score * gc.weight / 100), 2) AS final_grade
-FROM Grade g
-JOIN Student s
-    ON g.student_id = s.student_id
-JOIN Assignment a
-    ON g.assignment_id = a.assignment_id
-JOIN GradeCategory gc
-    ON a.category_id = gc.category_id
-JOIN Course c
-    ON a.course_id = c.course_id
-GROUP BY
-    g.student_id,
-    s.first_name,
-    s.last_name,
-    c.course_id,
-    c.course_number,
-    c.course_name
-ORDER BY
-    c.course_id,
-    g.student_id;
-
-
-
-/* Final Grade Query for one Student*/
-
-SELECT
-    g.student_id,
-    s.first_name,
-    s.last_name,
-    c.course_id,
-    c.course_number,
-    c.course_name,
-    ROUND(SUM(g.score * gc.weight / 100), 2) AS final_grade
-FROM Grade g
-JOIN Student s
-    ON g.student_id = s.student_id
-JOIN Assignment a
-    ON g.assignment_id = a.assignment_id
-JOIN GradeCategory gc
-    ON a.category_id = gc.category_id
-JOIN Course c
-    ON a.course_id = c.course_id
-WHERE g.student_id = 1
-GROUP BY
-    g.student_id,
-    s.first_name,
-    s.last_name,
-    c.course_id,
-    c.course_number,
-    c.course_name;
-
-/* Final Letter Grade Query for one Student*/
-
-SELECT
-    g.student_id,
-    s.first_name,
-    s.last_name,
-    c.course_id,
-    c.course_number,
-    c.course_name,
-    ROUND(SUM(g.score * gc.weight / 100), 2) AS final_grade,
-    CASE
-        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 90 THEN 'A'
-        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 80 THEN 'B'
-        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 70 THEN 'C'
-        WHEN ROUND(SUM(g.score * gc.weight / 100), 2) >= 60 THEN 'D'
-        ELSE 'F'
-    END AS letter_grade
-FROM Grade g
-JOIN Student s
-    ON g.student_id = s.student_id
-JOIN Assignment a
-    ON g.assignment_id = a.assignment_id
-JOIN GradeCategory gc
-    ON a.category_id = gc.category_id
-JOIN Course c
-    ON a.course_id = c.course_id
-GROUP BY
-    g.student_id,
-    s.first_name,
-    s.last_name,
-    c.course_id,
-    c.course_number,
-    c.course_name
-ORDER BY
-    c.course_id,
-    g.student_id;
-
-
-
