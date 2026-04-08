@@ -44,7 +44,7 @@ GROUP BY a.assignment_id, a.title, c.course_name;
 
 -- =============================================================
 -- TASK 5: List all students enrolled in a given course
---         (example: course_id = 1, Statistics)
+--         (example: course_id = 1, Calculus 1)
 -- =============================================================
 
 SELECT DISTINCT
@@ -62,7 +62,7 @@ WHERE e.course_id = 1
 ORDER BY s.last_name, s.first_name;
 
 -- To list students in a different course, change the value after WHERE e.course_id =
--- Example for course_id = 2 (Calculus):
+-- Example for course_id = 2 (Linear Algebra):
 SELECT DISTINCT
     s.student_id,
     s.first_name,
