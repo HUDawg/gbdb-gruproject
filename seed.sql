@@ -4,13 +4,10 @@
 -- Task 3: SELECT * to show table contents
 -- =============================================================
 
-USE GradeBookDB;
-
 -- =========================================================
---                     INSERT DATA
+-- DATA INSERTS
 -- =========================================================
--- 	PROFESSORS
--- =========================================================
+-- Insert 20 professors (one per course)
 
 INSERT INTO Professor (first_name, last_name, email, phone_number) VALUES
 ('Alma','Bennett','alma.bennett@college.edu','301-555-2001'),
@@ -34,9 +31,9 @@ INSERT INTO Professor (first_name, last_name, email, phone_number) VALUES
 ('Theresa','Whitaker','theresa.whitaker@college.edu','301-555-2019'),
 ('Victor','Callahan','victor.callahan@college.edu','301-555-2020');
 
--- =========================================================
--- COURSES (FIXED: includes professor_id)
--- =========================================================
+
+-- Each course is assigned to exactly one professor
+-- (enforces 1-to-many: Professor → Course)
 
 INSERT INTO Course (professor_id, department, course_number, semester, year, course_name) VALUES
 (1,'Mathematics','MATH201','Fall',2025,'Calculus I'),
@@ -60,9 +57,9 @@ INSERT INTO Course (professor_id, department, course_number, semester, year, cou
 (19,'Computer Science','CS320','Fall',2026,'Database Systems'),
 (20,'Computer Science','CS350','Spring',2026,'Computer Networks');
 
--- =========================================================
--- STUDENTS 
--- =========================================================
+
+-- Insert 200 students with unique email and phone
+-- Includes diverse last names for testing (e.g., 'Q' cases)
 
 INSERT INTO Student (first_name, last_name, email, phone_number)
 VALUES
@@ -267,9 +264,16 @@ VALUES
     ('Madeline', 'Yates', 'madeline.yates199@studentmail.edu', '202-555-1199'),
     ('Marcus', 'Allen', 'marcus.allen200@studentmail.edu', '202-555-1200');
 
+
 -- =========================================================
 -- ENROLLMENT
+-- Assigns 10 students per course (200 students, 20 courses)
 -- =========================================================
+-- Uses recursive sequence:
+-- student_id 1–10 → course 1
+-- student_id 11–20 → course 2
+-- etc.
+
 INSERT INTO Enrollment (student_id, course_id)
 WITH RECURSIVE seq AS (
     SELECT 1 AS n
@@ -282,8 +286,34 @@ SELECT
 FROM seq;
 
 -- =========================================================
--- ASSIGNMENT
+-- GRADE CATEGORIES
 -- =========================================================
+-- Each course has:
+-- Participation (10%)
+-- Homework (25%)
+-- Midterm Exam (30%)
+-- Final Project (35%)
+-- Total = 100%
+
+INSERT INTO GradeCategory (course_id, name, weight)
+SELECT c.course_id, cat.name, cat.weight
+FROM Course c
+CROSS JOIN (
+    SELECT 'Participation' AS name, 10.00 AS weight
+    UNION ALL SELECT 'Homework', 25.00
+    UNION ALL SELECT 'Midterm Exam', 30.00
+    UNION ALL SELECT 'Final Project', 35.00
+) AS cat
+ORDER BY c.course_id;
+
+
+
+-- =========================================================
+-- ASSIGNMENTS
+-- =========================================================
+-- Each category gets one assignment initially
+-- (expanded later for Task 7 to support drop-lowest logic)
+
 INSERT INTO Assignment (course_id, category_id, title, description)
 SELECT
     gc.course_id,
@@ -303,9 +333,20 @@ SELECT
 FROM GradeCategory gc
 ORDER BY gc.course_id, gc.category_id;
 
+
+
 -- =========================================================
--- GRADE
+-- GRADE GENERATION
 -- =========================================================
+
+-- Grades are generated using:
+-- 1. Student performance tiers (based on student_id)
+-- 2. Assignment difficulty adjustments by category
+-- 3. Small deterministic variation
+
+-- This creates realistic grade distributions:
+-- strong / average / weak students
+
 INSERT INTO Grade (student_id, assignment_id, score, comments)
 SELECT
     e.student_id,
@@ -442,22 +483,6 @@ JOIN Assignment a
 JOIN GradeCategory gc
     ON a.category_id = gc.category_id
 ORDER BY e.student_id, a.assignment_id;
-
-
--- =========================================================
--- GRADECATEGORY
--- =========================================================
-INSERT INTO GradeCategory (course_id, name, weight)
-SELECT c.course_id, cat.name, cat.weight
-FROM Course c
-CROSS JOIN (
-    SELECT 'Participation' AS name, 10.00 AS weight
-    UNION ALL SELECT 'Homework', 25.00
-    UNION ALL SELECT 'Midterm Exam', 30.00
-    UNION ALL SELECT 'Final Project', 35.00
-) AS cat
-ORDER BY c.course_id;
-
 
 -- -----------------------------------------------
 -- Task 3: Show table contents
