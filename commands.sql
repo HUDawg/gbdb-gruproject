@@ -1049,20 +1049,6 @@ GROUP BY
     c.course_number,
     c.course_name;
 
-/* Extra. Show professor assigned to each course */
-SELECT DISTINCT
-    c.course_id,
-    c.department,
-    c.course_number,
-    c.course_name,
-    p.professor_id,
-    p.first_name,
-    p.last_name
-FROM Course c
-JOIN Enrollment e ON c.course_id = e.course_id
-JOIN Professor p ON e.professor_id = p.professor_id
-ORDER BY c.course_id;
-
 /* Extra. Show assignments for a course */
 SELECT
     a.assignment_id,
