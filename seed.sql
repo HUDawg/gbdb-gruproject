@@ -514,6 +514,16 @@ GROUP BY course_id
 ORDER BY course_id;
 
 
+SELECT
+    g.student_id,
+    ROUND(SUM(g.score * gc.weight / 100), 2) AS final_grade
+FROM Grade g
+JOIN Assignment a ON g.assignment_id = a.assignment_id
+JOIN GradeCategory gc ON a.category_id = gc.category_id
+WHERE g.student_id = 1
+GROUP BY g.student_id;
+
+
 /* See Grades totals per Letter Grade */
 SELECT
     CASE
