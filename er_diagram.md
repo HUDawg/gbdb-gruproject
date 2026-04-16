@@ -40,4 +40,3 @@ This document describes the Entity-Relationship (ER) diagram for the GradeBook D
 - **Foreign Keys (FK):** Enforce referential integrity between related tables.
 - **GradeCategory.weight:** All weights per course must sum to **100%**.
 - **Grade.score:** Can be NULL if the assignment has not been submitted yet.
-- **Assignment.max_points:** Default is 100.00; allows partial-credit scaling.
