@@ -1,8 +1,8 @@
 # 📘 GradeBook Database Project 16 
 #
-   **Cameron J. Monk**
-   **Simon John Armstrong**
-   **Isaiah E. Brundidge**
+#   **Cameron J. Monk**
+#   **Simon John Armstrong**
+#   **Isaiah E. Brundidge**
 
 The **GradeBook Database Project** is a MySQL-based system designed to manage student records, courses, and grading data. This project was initialized and managed using the MySQL Command Line Interface.
 
