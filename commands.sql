@@ -346,6 +346,15 @@ VALUES
 
 
 
+-- =========================================================
+-- ENROLLMENT
+-- Assigns 10 students per course (200 students, 20 courses)
+-- =========================================================
+-- Uses recursive sequence:
+-- student_id 1–10 → course 1
+-- student_id 11–20 → course 2
+-- etc.
+
 INSERT INTO Enrollment (student_id, course_id)
 WITH RECURSIVE seq AS (
     SELECT 1 AS n
@@ -357,6 +366,34 @@ SELECT
     CEILING(n / 10)
 FROM seq;
 
+-- =========================================================
+-- GRADE CATEGORIES
+-- =========================================================
+-- Each course has:
+-- Participation (10%)
+-- Homework (25%)
+-- Midterm Exam (30%)
+-- Final Project (35%)
+-- Total = 100%
+
+INSERT INTO GradeCategory (course_id, name, weight)
+SELECT c.course_id, cat.name, cat.weight
+FROM Course c
+CROSS JOIN (
+    SELECT 'Participation' AS name, 10.00 AS weight
+    UNION ALL SELECT 'Homework', 25.00
+    UNION ALL SELECT 'Midterm Exam', 30.00
+    UNION ALL SELECT 'Final Project', 35.00
+) AS cat
+ORDER BY c.course_id;
+
+
+
+-- =========================================================
+-- ASSIGNMENTS
+-- =========================================================
+-- Each category gets one assignment initially
+-- (expanded later for Task 7 to support drop-lowest logic)
 
 INSERT INTO Assignment (course_id, category_id, title, description)
 SELECT
@@ -377,30 +414,172 @@ SELECT
 FROM GradeCategory gc
 ORDER BY gc.course_id, gc.category_id;
 
+
+
+-- =========================================================
+-- GRADE GENERATION
+-- =========================================================
+
+-- Grades are generated using:
+-- 1. Student performance tiers (based on student_id)
+-- 2. Assignment difficulty adjustments by category
+-- 3. Small deterministic variation
+
+-- This creates realistic grade distributions:
+-- strong / average / weak students
+
 INSERT INTO Grade (student_id, assignment_id, score, comments)
 SELECT
     e.student_id,
     a.assignment_id,
     ROUND(
-        CASE gc.name
-            WHEN 'Participation' THEN 80 + MOD(e.student_id + a.assignment_id, 16)
-            WHEN 'Homework' THEN 75 + MOD(e.student_id + a.assignment_id, 18)
-            WHEN 'Midterm Exam' THEN 70 + MOD(e.student_id + a.assignment_id, 21)
-            WHEN 'Final Project' THEN 78 + MOD(e.student_id + a.assignment_id, 17)
-        END, 2
+        GREATEST(
+            35,
+            LEAST(
+                100,
+                (
+                    /* student performance base */
+                    CASE
+                        WHEN MOD(e.student_id, 10) IN (1, 2) THEN 95
+                        WHEN MOD(e.student_id, 10) IN (3, 4) THEN 85
+                        WHEN MOD(e.student_id, 10) IN (5, 6, 7) THEN 75
+                        WHEN MOD(e.student_id, 10) IN (8, 9) THEN 65
+                        ELSE 55
+                    END
+
+                    /* assignment difficulty adjustment */
+                    +
+                    CASE gc.name
+                        WHEN 'Participation' THEN 5
+                        WHEN 'Homework' THEN 0
+                        WHEN 'Midterm Exam' THEN -10
+                        WHEN 'Final Project' THEN -5
+                    END
+
+                    /* assignment-specific variation */
+                    + MOD(a.assignment_id * 3 + e.student_id, 8) - 4
+                )
+            )
+        ),
+        2
     ) AS score,
-    CASE gc.name
-        WHEN 'Participation' THEN 'Participation grade recorded.'
-        WHEN 'Homework' THEN 'Homework submitted and graded.'
-        WHEN 'Midterm Exam' THEN 'Midterm exam completed.'
-        WHEN 'Final Project' THEN 'Final project evaluated.'
+    CASE
+        WHEN
+            GREATEST(
+                35,
+                LEAST(
+                    100,
+                    (
+                        CASE
+                            WHEN MOD(e.student_id, 10) IN (1, 2) THEN 95
+                            WHEN MOD(e.student_id, 10) IN (3, 4) THEN 85
+                            WHEN MOD(e.student_id, 10) IN (5, 6, 7) THEN 75
+                            WHEN MOD(e.student_id, 10) IN (8, 9) THEN 65
+                            ELSE 55
+                        END
+                        + CASE gc.name
+                            WHEN 'Participation' THEN 5
+                            WHEN 'Homework' THEN 0
+                            WHEN 'Midterm Exam' THEN -10
+                            WHEN 'Final Project' THEN -5
+                        END
+                        + MOD(a.assignment_id * 3 + e.student_id, 8) - 4
+                    )
+                )
+            ) >= 90 THEN 'Excellent work.'
+        WHEN
+            GREATEST(
+                35,
+                LEAST(
+                    100,
+                    (
+                        CASE
+                            WHEN MOD(e.student_id, 10) IN (1, 2) THEN 95
+                            WHEN MOD(e.student_id, 10) IN (3, 4) THEN 85
+                            WHEN MOD(e.student_id, 10) IN (5, 6, 7) THEN 75
+                            WHEN MOD(e.student_id, 10) IN (8, 9) THEN 65
+                            ELSE 55
+                        END
+                        + CASE gc.name
+                            WHEN 'Participation' THEN 5
+                            WHEN 'Homework' THEN 0
+                            WHEN 'Midterm Exam' THEN -10
+                            WHEN 'Final Project' THEN -5
+                        END
+                        + MOD(a.assignment_id * 3 + e.student_id, 8) - 4
+                    )
+                )
+            ) >= 80 THEN 'Good performance.'
+        WHEN
+            GREATEST(
+                35,
+                LEAST(
+                    100,
+                    (
+                        CASE
+                            WHEN MOD(e.student_id, 10) IN (1, 2) THEN 95
+                            WHEN MOD(e.student_id, 10) IN (3, 4) THEN 85
+                            WHEN MOD(e.student_id, 10) IN (5, 6, 7) THEN 75
+                            WHEN MOD(e.student_id, 10) IN (8, 9) THEN 65
+                            ELSE 55
+                        END
+                        + CASE gc.name
+                            WHEN 'Participation' THEN 5
+                            WHEN 'Homework' THEN 0
+                            WHEN 'Midterm Exam' THEN -10
+                            WHEN 'Final Project' THEN -5
+                        END
+                        + MOD(a.assignment_id * 3 + e.student_id, 8) - 4
+                    )
+                )
+            ) >= 70 THEN 'Satisfactory work.'
+        WHEN
+            GREATEST(
+                35,
+                LEAST(
+                    100,
+                    (
+                        CASE
+                            WHEN MOD(e.student_id, 10) IN (1, 2) THEN 95
+                            WHEN MOD(e.student_id, 10) IN (3, 4) THEN 85
+                            WHEN MOD(e.student_id, 10) IN (5, 6, 7) THEN 75
+                            WHEN MOD(e.student_id, 10) IN (8, 9) THEN 65
+                            ELSE 55
+                        END
+                        + CASE gc.name
+                            WHEN 'Participation' THEN 5
+                            WHEN 'Homework' THEN 0
+                            WHEN 'Midterm Exam' THEN -10
+                            WHEN 'Final Project' THEN -5
+                        END
+                        + MOD(a.assignment_id * 3 + e.student_id, 8) - 4
+                    )
+                )
+            ) >= 60 THEN 'Needs improvement.'
+        ELSE 'Unsatisfactory performance.'
     END AS comments
 FROM Enrollment e
-JOIN Assignment a ON e.course_id = a.course_id
-JOIN GradeCategory gc ON a.category_id = gc.category_id
+JOIN Assignment a
+    ON e.course_id = a.course_id
+JOIN GradeCategory gc
+    ON a.category_id = gc.category_id
 ORDER BY e.student_id, a.assignment_id;
 
--- Verification queries
+-- -----------------------------------------------
+-- Task 3: Show table contents
+-- -----------------------------------------------
+SELECT * FROM Student;
+SELECT * FROM Professor;
+SELECT * FROM Course;
+SELECT * FROM Enrollment;
+SELECT * FROM GradeCategory;
+SELECT * FROM Assignment;
+SELECT * FROM Grade;
+
+-- =========================================================
+-- VERIFICATION QUERIES
+-- =========================================================
+
 SELECT COUNT(*) AS total_students FROM Student;
 SELECT COUNT(*) AS total_professors FROM Professor;
 SELECT COUNT(*) AS total_courses FROM Course;
@@ -409,10 +588,12 @@ SELECT COUNT(*) AS total_grade_categories FROM GradeCategory;
 SELECT COUNT(*) AS total_assignments FROM Assignment;
 SELECT COUNT(*) AS total_grades FROM Grade;
 
+/* Students Enrolled Per Course */
 SELECT course_id, COUNT(*) AS enrolled_students
 FROM Enrollment
 GROUP BY course_id
 ORDER BY course_id;
+
 
 SELECT
     g.student_id,
@@ -423,6 +604,72 @@ JOIN GradeCategory gc ON a.category_id = gc.category_id
 WHERE g.student_id = 1
 GROUP BY g.student_id;
 
+
+/* See Grades totals per Letter Grade */
+SELECT
+    CASE
+        WHEN score >= 90 THEN 'A'
+        WHEN score >= 80 THEN 'B'
+        WHEN score >= 70 THEN 'C'
+        WHEN score >= 60 THEN 'D'
+        ELSE 'F'
+    END AS letter_grade,
+    COUNT(*) AS total
+FROM Grade
+GROUP BY
+    CASE
+        WHEN score >= 90 THEN 'A'
+        WHEN score >= 80 THEN 'B'
+        WHEN score >= 70 THEN 'C'
+        WHEN score >= 60 THEN 'D'
+        ELSE 'F'
+    END
+ORDER BY letter_grade;
+
+/* Course Legend */
+SELECT
+    c.course_id,
+    c.professor_id,
+    p.first_name AS professor_first_name,
+    p.last_name AS professor_last_name,
+    c.department,
+    c.course_number,
+    c.semester,
+    c.year,
+    c.course_name
+FROM Course c
+JOIN Professor p ON c.professor_id = p.professor_id
+ORDER BY c.course_id;
+
+/* Assignment Legend  */
+SELECT
+    a.assignment_id,
+    a.course_id,
+    c.course_number,
+    c.course_name,
+    a.category_id,
+    gc.name AS category_name,
+    gc.weight,
+    a.title,
+    a.description
+FROM Assignment a
+JOIN Course c ON a.course_id = c.course_id
+JOIN GradeCategory gc ON a.category_id = gc.category_id
+ORDER BY a.assignment_id;
+
+/* Enrollmeent Legend */
+SELECT 
+    e.enrollment_id,
+    e.student_id,
+    s.first_name,
+    s.last_name,
+    e.course_id,
+    c.course_number,
+    c.course_name
+FROM Enrollment e
+JOIN Student s ON e.student_id = s.student_id
+JOIN Course c ON e.course_id = c.course_id
+ORDER BY e.enrollment_id;
 
 
 
