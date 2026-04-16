@@ -1,6 +1,6 @@
 # Task 1: ER Diagram — GradeBook Database
 
-This document describes the Entity-Relationship (ER) diagram for the GradeBook Database. The diagram is represented below using a Mermaid ERD, which GitHub renders visually.
+This document describes the Entity-Relationship (ER) diagram for the GradeBook Database. The ERD is represented below using a crows foot notation. In this design, grades are tied to students and assignments, not directly to professors. The professor’s role is represented indirectly through the course.
 
 ## Entity Descriptions
 
