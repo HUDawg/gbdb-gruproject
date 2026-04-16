@@ -152,29 +152,5 @@ Exit MySQL CLI
 * Default host: `localhost`
 * Ensure MySQL service is running before connecting
 * Keep credentials secure (do NOT commit passwords to GitHub)
-* Relationships:
-1. Student ↔ Enrollment
-One student → many enrollments
-One enrollment → one student
-2. Course ↔ Enrollment
-One course → many students
-One enrollment → one course
-👉 This creates the many-to-many relationship between students and courses
-3. Professor ↔ Course
-One professor → many courses
-One course → one professor
-4. Course ↔ GradeCategory
-One course → many categories
-(Homework, Exam, etc.)
-5. Course ↔ Assignment
-One course → many assignments
-6. GradeCategory ↔ Assignment
-One category → many assignments
-Each assignment belongs to one category
-7. Student ↔ Grade
-One student → many grades
-8. Assignment ↔ Grade
-One assignment → many grades
-
 
 ---
