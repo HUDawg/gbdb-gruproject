@@ -778,7 +778,7 @@ WHERE e.course_id = 2
 ORDER BY s.last_name, s.first_name;
 
 
-/* 5. Show student grades for Course 1 */
+/* 6. Show student grades for Course 1 */
 SELECT 
     g.student_id,
     s.first_name,
@@ -795,7 +795,7 @@ JOIN Enrollment e
 WHERE e.course_id = 1
 ORDER BY g.student_id, a.assignment_id;
 
-/* 6. Add one additional assignment for Course 1
+/* 7. Add one additional assignment for Course 1
    Safe version: no manual assignment_id needed */
 INSERT INTO Assignment (course_id, category_id, title, description)
 SELECT 
