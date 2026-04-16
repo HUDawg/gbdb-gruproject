@@ -32,76 +32,7 @@ This document describes the Entity-Relationship (ER) diagram for the GradeBook D
 
 ##  ER Diagram
 
-<img width="2072" height="1324" alt="image" src="https://github.com/user-attachments/assets/47e12beb-1160-4e35-9af1-13cf6790e147" />
-
-
-```mermaid
-erDiagram
-    Student {
-        int student_id PK
-        varchar first_name
-        varchar last_name
-        varchar email
-        varchar phone_number
-    }
-
-    Professor {
-        int professor_id PK
-        varchar first_name
-        varchar last_name
-        varchar email
-        varchar phone_number
-    }
-
-    Course {
-        int course_id PK
-        varchar department
-        varchar course_number
-        varchar semester
-        int year
-        varchar course_name
-    }
-
-    Enrollment {
-        int enrollment_id PK
-        int student_id FK
-        int professor_id FK
-        int course_id FK
-    }
-
-    GradeCategory {
-        int category_id PK
-        int course_id FK
-        varchar name
-        decimal weight
-    }
-
-    Assignment {
-        int assignment_id PK
-        int course_id FK
-        int category_id FK
-        varchar title
-        text description
-        decimal max_points
-    }
-
-    Grade {
-        int grade_id PK
-        int student_id FK
-        int assignment_id FK
-        decimal score
-        text comments
-    }
-
-    Student ||--o{ Enrollment : "enrolls in"
-    Professor ||--o{ Enrollment : "teaches"
-    Course ||--o{ Enrollment : "has"
-    Course ||--o{ GradeCategory : "has"
-    GradeCategory ||--o{ Assignment : "contains"
-    Course ||--o{ Assignment : "includes"
-    Student ||--o{ Grade : "receives"
-    Assignment ||--o{ Grade : "graded by"
-```
+<img width="2154" height="1334" alt="image" src="https://github.com/user-attachments/assets/2c7bd018-f919-443f-acbe-5c733e2938d3" />
 
 ## Key Constraints
 
