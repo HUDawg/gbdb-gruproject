@@ -32,7 +32,8 @@ This document describes the Entity-Relationship (ER) diagram for the GradeBook D
 
 ##  ER Diagram
 
-<img width="2102" height="1360" alt="image" src="https://github.com/user-attachments/assets/c75b56a5-a17f-49c2-ae18-671de1e163be" />
+<img width="2124" height="1362" alt="image" src="https://github.com/user-attachments/assets/f77fa550-1374-49dd-9053-7b1d2bd1b991" />
+
 
 
 ## Key Constraints
